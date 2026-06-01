@@ -1,7 +1,12 @@
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import { useEffect, useRef } from 'react';
+import style from './StreetView.module.css';
 
-const StreetView = () => {
+interface StreetViewProps {
+  position: google.maps.LatLngLiteral;
+}
+
+const StreetView = ({ position }: StreetViewProps) => {
   const streetViewLib = useMapsLibrary('streetView');
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -11,7 +16,7 @@ const StreetView = () => {
     }
 
     new google.maps.StreetViewPanorama(containerRef.current, {
-      position: { lat: 37.7749, lng: -122.4194 },
+      position,
       pov: { heading: 0, pitch: 0 },
       zoom: 1,
       addressControl: false,
@@ -20,9 +25,9 @@ const StreetView = () => {
       motionTrackingControl: false,
       showRoadLabels: false,
     });
-  }, [streetViewLib]);
+  }, [position, streetViewLib]);
 
-  return <div ref={containerRef} className="street-view" />;
+  return <div ref={containerRef} className={style.streetView} />;
 };
 
 export default StreetView;

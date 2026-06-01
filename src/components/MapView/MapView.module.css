@@ -1,0 +1,17 @@
+.mapView {
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+
+  z-index: 1;
+}
+
+.map {
+  width: 200px;
+  height: 200px;
+
+  &:hover {
+    width: 600px;
+    height: 500px;
+  }
+}
