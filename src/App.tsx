@@ -40,7 +40,7 @@ const App = () => {
     <PositionContext.Provider
       value={{ position, setPosition: setPositionWrapper }}
     >
-      <APIProvider apiKey={API_KEY} libraries={['streetView']}>
+      <APIProvider apiKey={API_KEY} libraries={['streetView', 'marker']}>
         <BrowserRouter>
           <Routing />
         </BrowserRouter>
