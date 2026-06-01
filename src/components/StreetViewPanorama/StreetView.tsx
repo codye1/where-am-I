@@ -12,27 +12,23 @@ const StreetView = ({ position }: StreetViewProps) => {
   const panoramaRef = useRef<google.maps.StreetViewPanorama | null>(null);
 
   useEffect(() => {
-    if (!streetViewLib || !containerRef.current) {
+    if (!streetViewLib || !containerRef.current || panoramaRef.current) {
       return;
     }
 
-    if (!panoramaRef.current) {
-      panoramaRef.current = new google.maps.StreetViewPanorama(
-        containerRef.current,
-        {
-          position,
-          pov: { heading: 0, pitch: 0 },
-          zoom: 1,
-          addressControl: false,
-          fullscreenControl: false,
-          motionTracking: false,
-          motionTrackingControl: false,
-          showRoadLabels: false,
-        }
-      );
-    } else {
-      panoramaRef.current.setPosition(position);
-    }
+    panoramaRef.current = new google.maps.StreetViewPanorama(
+      containerRef.current,
+      {
+        position,
+        pov: { heading: 0, pitch: 0 },
+        zoom: 1,
+        addressControl: false,
+        fullscreenControl: false,
+        motionTracking: false,
+        motionTrackingControl: false,
+        showRoadLabels: false,
+      }
+    );
 
     return () => {
       if (panoramaRef.current) {
@@ -40,6 +36,15 @@ const StreetView = ({ position }: StreetViewProps) => {
       }
     };
   }, [position, streetViewLib]);
+
+  useEffect(() => {
+    if (!panoramaRef.current) {
+      return;
+    }
+
+    panoramaRef.current.setPosition(position);
+    panoramaRef.current.setVisible(true);
+  }, [position]);
 
   return <div ref={containerRef} className={style.streetView} />;
 };
