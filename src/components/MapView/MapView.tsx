@@ -1,4 +1,4 @@
-import style from './MapView.module.css';
+import style from './MapView.module.scss';
 import {
   AdvancedMarker,
   Map,
@@ -38,27 +38,7 @@ const MapView = () => {
 
   return (
     <>
-      <div className={clsx(style.mapView)}>
-        <Map
-          className={clsx(style.map)}
-          disableDefaultUI
-          mapId={'pickingMap'}
-          defaultZoom={1}
-          defaultCenter={{ lat: 48.0503486, lng: 19.5724191 }}
-          onClick={handleMapClick}
-        >
-          {markerPosition && (
-            <AdvancedMarker position={markerPosition}>
-              <div className={style.mapDot} />
-            </AdvancedMarker>
-          )}
-        </Map>
-        <button disabled={!markerPosition} onClick={handleSubmitGuess}>
-          Submit Guess
-        </button>
-      </div>
-
-      {isGuessSubmitted && markerPosition && positionToGuess && (
+      {isGuessSubmitted && markerPosition && positionToGuess ? (
         <ResultMap
           markerPosition={markerPosition}
           positionToGuess={positionToGuess}
@@ -67,6 +47,26 @@ const MapView = () => {
             setIsGuessSubmitted(false);
           }}
         />
+      ) : (
+        <div className={clsx(style.mapView)}>
+          <Map
+            className={clsx(style.map)}
+            disableDefaultUI
+            mapId={'pickingMap'}
+            defaultZoom={1}
+            defaultCenter={{ lat: 48.0503486, lng: 19.5724191 }}
+            onClick={handleMapClick}
+          >
+            {markerPosition && (
+              <AdvancedMarker position={markerPosition}>
+                <div className={style.mapDot} />
+              </AdvancedMarker>
+            )}
+          </Map>
+          <button disabled={!markerPosition} onClick={handleSubmitGuess}>
+            Submit Guess
+          </button>
+        </div>
       )}
     </>
   );

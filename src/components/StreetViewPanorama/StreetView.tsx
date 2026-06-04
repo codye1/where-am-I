@@ -1,6 +1,8 @@
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
-import { useEffect, useRef } from 'react';
-import style from './StreetView.module.css';
+import { useContext, useEffect, useRef, useState } from 'react';
+import style from './StreetView.module.scss';
+import findRandomStreetView from '../../helpers/findRandomStreetView';
+import { PositionContext } from '../../App';
 
 interface StreetViewProps {
   position: google.maps.LatLngLiteral;
@@ -8,8 +10,12 @@ interface StreetViewProps {
 
 const StreetView = ({ position }: StreetViewProps) => {
   const streetViewLib = useMapsLibrary('streetView');
+  const positionContext = useContext(PositionContext);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const panoramaRef = useRef<google.maps.StreetViewPanorama | null>(null);
+  const retryTimeoutRef = useRef<number | null>(null);
+  const [hasError, setHasError] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   useEffect(() => {
     if (!streetViewLib || !containerRef.current || panoramaRef.current) {
@@ -30,7 +36,23 @@ const StreetView = ({ position }: StreetViewProps) => {
       }
     );
 
+    const statusListener = panoramaRef.current.addListener(
+      'status_changed',
+      () => {
+        const status = panoramaRef.current?.getStatus();
+        if (!status) {
+          return;
+        }
+      }
+    );
+
     return () => {
+      if (retryTimeoutRef.current) {
+        window.clearTimeout(retryTimeoutRef.current);
+      }
+
+      statusListener.remove();
+
       if (panoramaRef.current) {
         panoramaRef.current.setVisible(false);
       }
@@ -42,11 +64,46 @@ const StreetView = ({ position }: StreetViewProps) => {
       return;
     }
 
+    setHasError(false);
     panoramaRef.current.setPosition(position);
     panoramaRef.current.setVisible(true);
   }, [position]);
 
-  return <div ref={containerRef} className={style.streetView} />;
+  const handleRetry = () => {
+    if (!positionContext?.setPosition || !streetViewLib || isRetrying) {
+      return;
+    }
+
+    setIsRetrying(true);
+    setHasError(false);
+
+    retryTimeoutRef.current = window.setTimeout(() => {
+      findRandomStreetView({
+        sv: new google.maps.StreetViewService(),
+        callback: (nextPosition) => {
+          positionContext.setPosition({
+            lat: nextPosition.lat(),
+            lng: nextPosition.lng(),
+          });
+          setIsRetrying(false);
+        },
+      });
+    }, 1200);
+  };
+
+  return (
+    <div className={style.streetViewWrapper}>
+      <div ref={containerRef} className={style.streetView} />
+      {hasError && (
+        <div className={style.errorOverlay}>
+          <p>Street View temporarily unavailable.</p>
+          <button onClick={handleRetry} disabled={isRetrying}>
+            {isRetrying ? 'Retrying...' : 'Try again'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default StreetView;

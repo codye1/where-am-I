@@ -5,7 +5,7 @@ import {
   Polyline,
   useMap,
 } from '@vis.gl/react-google-maps';
-import styles from './ResultMap.module.css';
+import styles from './ResultMap.module.scss';
 import finishIcon from '../../assets/finish.svg';
 import { useContext, useEffect, useState } from 'react';
 import { PositionContext } from '../../App';

@@ -1,7 +1,7 @@
 import StreetView from '../../components/StreetViewPanorama/StreetView';
 import { PositionContext } from '../../App';
 import { useContext } from 'react';
-import style from './Match.module.css';
+import style from './Match.module.scss';
 import MapView from '../../components/MapView/MapView';
 
 const Match = () => {

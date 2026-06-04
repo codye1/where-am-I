@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
-import style from './Home.module.css';
+import style from './Home.module.scss';
 import { PositionContext } from '../../App';
 import findRandomStreetView from '../../helpers/findRandomStreetView';
 import { useNavigate } from 'react-router';
@@ -35,9 +35,7 @@ const Home = () => {
                 lng: position.lng(),
               };
 
-              console.log('Found Street View position:', nextPosition);
               setPosition(nextPosition);
-
               navigate('/match');
             },
           });
