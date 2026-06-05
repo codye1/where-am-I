@@ -16,6 +16,7 @@ const StreetView = ({ position }: StreetViewProps) => {
   const retryTimeoutRef = useRef<number | null>(null);
   const [hasError, setHasError] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
+  const initialPositionRef = useRef(position);
 
   useEffect(() => {
     if (!streetViewLib || !containerRef.current || panoramaRef.current) {
@@ -25,7 +26,7 @@ const StreetView = ({ position }: StreetViewProps) => {
     panoramaRef.current = new google.maps.StreetViewPanorama(
       containerRef.current,
       {
-        position,
+        position: initialPositionRef.current,
         pov: { heading: 0, pitch: 0 },
         zoom: 1,
         addressControl: false,
@@ -40,8 +41,8 @@ const StreetView = ({ position }: StreetViewProps) => {
       'status_changed',
       () => {
         const status = panoramaRef.current?.getStatus();
-        if (!status) {
-          return;
+        if (status && status !== 'OK') {
+          setHasError(true);
         }
       }
     );
@@ -50,14 +51,13 @@ const StreetView = ({ position }: StreetViewProps) => {
       if (retryTimeoutRef.current) {
         window.clearTimeout(retryTimeoutRef.current);
       }
-
       statusListener.remove();
-
       if (panoramaRef.current) {
         panoramaRef.current.setVisible(false);
+        panoramaRef.current = null;
       }
     };
-  }, [position, streetViewLib]);
+  }, [streetViewLib]);
 
   useEffect(() => {
     if (!panoramaRef.current) {
@@ -65,8 +65,15 @@ const StreetView = ({ position }: StreetViewProps) => {
     }
 
     setHasError(false);
-    panoramaRef.current.setPosition(position);
-    panoramaRef.current.setVisible(true);
+
+    const currentPos = panoramaRef.current.getPosition();
+    if (
+      currentPos &&
+      (currentPos.lat() !== position.lat || currentPos.lng() !== position.lng)
+    ) {
+      panoramaRef.current.setPosition(position);
+      panoramaRef.current.setVisible(true);
+    }
   }, [position]);
 
   const handleRetry = () => {

@@ -143,3 +143,9 @@ button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -7,9 +7,7 @@ import {
 } from '@vis.gl/react-google-maps';
 import styles from './ResultMap.module.scss';
 import finishIcon from '../../assets/finish.svg';
-import { useContext, useEffect, useState } from 'react';
-import { PositionContext } from '../../App';
-import findRandomStreetView from '../../helpers/findRandomStreetView';
+import { useEffect } from 'react';
 
 interface ResultMapProps {
   markerPosition: google.maps.LatLngLiteral;
@@ -23,8 +21,6 @@ const ResultMap = ({
   onPlayAgain,
 }: ResultMapProps) => {
   const map = useMap('resultMap');
-  const setPosition = useContext(PositionContext)?.setPosition;
-  const [isLoadingNextRound, setIsLoadingNextRound] = useState(false);
 
   useEffect(() => {
     if (!map) {
@@ -79,29 +75,7 @@ const ResultMap = ({
           />
         )}
       </Map>
-      <button
-        className={styles.playAgainButton}
-        disabled={isLoadingNextRound}
-        onClick={() => {
-          if (!setPosition || isLoadingNextRound) {
-            return;
-          }
-
-          setIsLoadingNextRound(true);
-          findRandomStreetView({
-            sv: new google.maps.StreetViewService(),
-            callback: (position) => {
-              const nextPosition = {
-                lat: position.lat(),
-                lng: position.lng(),
-              };
-              setPosition(nextPosition);
-              setIsLoadingNextRound(false);
-              onPlayAgain();
-            },
-          });
-        }}
-      >
+      <button className={styles.playAgainButton} onClick={onPlayAgain}>
         Play Again
       </button>
     </div>

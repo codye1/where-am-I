@@ -9,7 +9,11 @@ import { PositionContext } from '../../App';
 import clsx from 'clsx';
 import ResultMap from '../ResultMap/ResultMap';
 
-const MapView = () => {
+interface MapViewProps {
+  onPlayAgain: () => void;
+}
+
+const MapView = ({ onPlayAgain }: MapViewProps) => {
   const [markerPosition, setMarkerPosition] =
     useState<google.maps.LatLngLiteral | null>(null);
   const [isGuessSubmitted, setIsGuessSubmitted] = useState(false);
@@ -45,6 +49,7 @@ const MapView = () => {
           onPlayAgain={() => {
             setMarkerPosition(null);
             setIsGuessSubmitted(false);
+            onPlayAgain();
           }}
         />
       ) : (
@@ -54,7 +59,7 @@ const MapView = () => {
             disableDefaultUI
             mapId={'pickingMap'}
             defaultZoom={1}
-            defaultCenter={{ lat: 48.0503486, lng: 19.5724191 }}
+            defaultCenter={{ lat: 45.0503486, lng: 19.5724191 }}
             onClick={handleMapClick}
           >
             {markerPosition && (
