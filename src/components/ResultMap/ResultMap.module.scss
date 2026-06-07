@@ -1,0 +1,52 @@
+@use '../../styles/mixins' as mixins;
+
+.resultMap {
+  position: absolute;
+  inset: 0;
+  @include mixins.flex-center(column);
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  background:
+    radial-gradient(
+      40em 30em at 20% 0%,
+      rgba(30, 166, 91, 0.2),
+      transparent 60%
+    ),
+    var(--color-bg);
+  z-index: 3;
+}
+
+.map {
+  width: 100%;
+  height: min(32em, 60vh);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 0.1em solid var(--color-border);
+  box-shadow: var(--shadow-2);
+}
+
+.playAgainButton {
+  background: var(--color-accent-2);
+  color: var(--color-on-accent-2);
+}
+
+.mapDot {
+  width: var(--map-dot);
+  height: var(--map-dot);
+  border-radius: 50%;
+  background: #ff4d4f;
+  border: 0.12em solid #ffffff;
+  box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.25);
+  transform: translateY(50%);
+}
+
+.mapDotToGuess {
+  background: #0d0d0c;
+  padding: 0.3em;
+
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}

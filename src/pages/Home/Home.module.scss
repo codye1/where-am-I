@@ -1,0 +1,43 @@
+@use '../../styles/mixins' as mixins;
+
+.home {
+  min-height: 100vh;
+  @include mixins.flex-center(column);
+  padding: var(--space-6);
+  text-align: center;
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        35em 20em at 20% 20%,
+        rgba(255, 255, 255, 0.6),
+        transparent 60%
+      ),
+      radial-gradient(
+        28em 18em at 80% 10%,
+        rgba(245, 182, 66, 0.3),
+        transparent 65%
+      );
+    opacity: 0.8;
+    z-index: -1;
+  }
+
+  & h1 {
+    margin-bottom: var(--space-2);
+  }
+
+  & p {
+    margin-bottom: var(--space-4);
+    max-width: 30em;
+  }
+
+  & button {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+}
