@@ -7,22 +7,25 @@ import {
 import { useState } from 'react';
 import clsx from 'clsx';
 import ResultMap from '../ResultMap/ResultMap';
+import { useSubmitGuessMutation } from '../../api/api';
 
 interface MapViewProps {
   onPlayAgain: () => void;
+  gameId: string;
 }
 
-const MapView = ({ onPlayAgain }: MapViewProps) => {
+const MapView = ({ onPlayAgain, gameId }: MapViewProps) => {
   const [markerPosition, setMarkerPosition] =
     useState<google.maps.LatLngLiteral | null>(null);
   const [isGuessSubmitted, setIsGuessSubmitted] = useState(false);
-  const positionToGuess = false; // TODO: get from api
+  const [submitGuess] = useSubmitGuessMutation();
+  const [positionToGuess, setPositionToGuess] =
+    useState<google.maps.LatLngLiteral | null>(null);
   const handleMapClick = (event: MapMouseEvent) => {
     const latLng = event.detail.latLng;
     if (!latLng) {
       return;
     }
-
     setMarkerPosition({
       lat: latLng.lat,
       lng: latLng.lng,
@@ -30,12 +33,19 @@ const MapView = ({ onPlayAgain }: MapViewProps) => {
     setIsGuessSubmitted(false);
   };
 
-  const handleSubmitGuess = () => {
+  const handleSubmitGuess = async () => {
     if (!markerPosition) {
       return;
     }
-
     setIsGuessSubmitted(true);
+
+    const data = await submitGuess({
+      gameId,
+      lat: markerPosition.lat,
+      lng: markerPosition.lng,
+    }).unwrap();
+    localStorage.removeItem('CURRENT_GAME');
+    setPositionToGuess(data.guessResult.targetCoords);
   };
 
   return (
@@ -47,6 +57,7 @@ const MapView = ({ onPlayAgain }: MapViewProps) => {
           onPlayAgain={() => {
             setMarkerPosition(null);
             setIsGuessSubmitted(false);
+            setPositionToGuess(null);
             onPlayAgain();
           }}
         />

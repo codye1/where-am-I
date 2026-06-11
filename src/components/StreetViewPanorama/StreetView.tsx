@@ -10,6 +10,9 @@ const StreetView = ({ panoramaId }: StreetViewProps) => {
   const streetViewLib = useMapsLibrary('streetView');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const panoramaRef = useRef<google.maps.StreetViewPanorama | null>(null);
+  const streetViewServiceRef = useRef<google.maps.StreetViewService | null>(
+    null
+  );
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
@@ -27,25 +30,30 @@ const StreetView = ({ panoramaId }: StreetViewProps) => {
         showRoadLabels: false,
       }
     );
+
+    streetViewServiceRef.current = new streetViewLib.StreetViewService();
   }, [streetViewLib]);
 
   useEffect(() => {
-    if (!panoramaRef.current || !panoramaId) return;
+    if (!panoramaRef.current || !streetViewServiceRef.current || !panoramaId)
+      return;
 
     setHasError(false);
 
-    const sv = new google.maps.StreetViewService();
-    sv.getPanorama({ pano: panoramaId }, (data, status) => {
-      if (
-        status === google.maps.StreetViewStatus.OK &&
-        data?.location?.latLng
-      ) {
-        panoramaRef.current!.setPano(panoramaId);
-        panoramaRef.current!.setVisible(true);
-      } else {
-        setHasError(true);
+    streetViewServiceRef.current.getPanorama(
+      { pano: panoramaId },
+      (data, status) => {
+        if (
+          status === streetViewLib!.StreetViewStatus.OK &&
+          data?.location?.latLng
+        ) {
+          panoramaRef.current!.setPano(panoramaId);
+          panoramaRef.current!.setVisible(true);
+        } else {
+          setHasError(true);
+        }
       }
-    });
+    );
   }, [panoramaId, streetViewLib]);
 
   return (

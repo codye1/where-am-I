@@ -3,28 +3,46 @@ import style from './Match.module.scss';
 import MapView from '../../components/MapView/MapView';
 import { useStartGameQuery } from '../../api/api';
 import Spinner from '../../components/Spinner/Spinner';
+import { useState } from 'react';
+
+const GAME_KEY = 'CURRENT_GAME';
 
 const Match = () => {
-  const panoramaId = 'assf';
-  const { data, error, isLoading } = useStartGameQuery();
+  const [savedGameJson, setSavedGameJson] = useState(
+    localStorage.getItem(GAME_KEY)
+  );
+  const [cacheKey, setCacheKey] = useState(0); // forces new query
+  const savedGame = savedGameJson ? JSON.parse(savedGameJson) : null;
+
+  const { data, error, isLoading } = useStartGameQuery(cacheKey, {
+    skip: !!savedGame,
+  });
+
+  const game = savedGame ?? data?.game;
+
+  const handlePlayAgain = () => {
+    localStorage.removeItem(GAME_KEY);
+    setSavedGameJson(null);
+    setCacheKey((k) => k + 1);
+  };
 
   if (isLoading) {
     return (
-      <div className={style.match}>
+      <div className={style.loading}>
         <Spinner size="lg" />
         Loading...
       </div>
     );
   }
 
-  if (error || !data) {
-    return <div className={style.match}>Failed to start game.</div>;
+  if (error || !game) {
+    return <div className={style.error}>Failed to start game.</div>;
   }
-  console.log('Game started with data:', data);
+
   return (
     <div className={style.match}>
-      <StreetView panoramaId={panoramaId} />
-      <MapView onPlayAgain={() => {}} />
+      <StreetView panoramaId={game.panoramaId} />
+      <MapView onPlayAgain={handlePlayAgain} gameId={game.id} />
     </div>
   );
 };
