@@ -4,8 +4,7 @@ import {
   Map,
   type MapMouseEvent,
 } from '@vis.gl/react-google-maps';
-import { useContext, useState } from 'react';
-import { PositionContext } from '../../App';
+import { useState } from 'react';
 import clsx from 'clsx';
 import ResultMap from '../ResultMap/ResultMap';
 
@@ -17,8 +16,7 @@ const MapView = ({ onPlayAgain }: MapViewProps) => {
   const [markerPosition, setMarkerPosition] =
     useState<google.maps.LatLngLiteral | null>(null);
   const [isGuessSubmitted, setIsGuessSubmitted] = useState(false);
-  const positionToGuess = useContext(PositionContext)?.position;
-
+  const positionToGuess = false; // TODO: get from api
   const handleMapClick = (event: MapMouseEvent) => {
     const latLng = event.detail.latLng;
     if (!latLng) {
@@ -33,7 +31,7 @@ const MapView = ({ onPlayAgain }: MapViewProps) => {
   };
 
   const handleSubmitGuess = () => {
-    if (!markerPosition || !positionToGuess) {
+    if (!markerPosition) {
       return;
     }
 
