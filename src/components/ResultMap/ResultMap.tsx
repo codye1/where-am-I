@@ -6,7 +6,7 @@ import {
   useMap,
 } from '@vis.gl/react-google-maps';
 import styles from './ResultMap.module.scss';
-import finishIcon from '../../assets/finish.svg';
+import finishIcon from '@assets/finish.svg';
 import { useEffect } from 'react';
 
 interface ResultMapProps {

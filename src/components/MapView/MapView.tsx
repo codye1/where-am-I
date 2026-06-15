@@ -7,7 +7,7 @@ import {
 import { useState } from 'react';
 import clsx from 'clsx';
 import ResultMap from '../ResultMap/ResultMap';
-import { useSubmitGuessMutation } from '../../api/api';
+import { useSubmitGuessMutation } from '@api/api';
 
 interface MapViewProps {
   onPlayAgain: () => void;

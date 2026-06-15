@@ -1,8 +1,8 @@
-import StreetView from '../../components/StreetViewPanorama/StreetView';
+import StreetView from '@components/StreetView/StreetView';
 import style from './Match.module.scss';
-import MapView from '../../components/MapView/MapView';
-import { useStartGameQuery } from '../../api/api';
-import Spinner from '../../components/Spinner/Spinner';
+import MapView from '@components/MapView/MapView';
+import { useStartGameQuery } from '@api/api';
+import Spinner from '@components/Spinner/Spinner';
 import { useState } from 'react';
 
 const GAME_KEY = 'CURRENT_GAME';
@@ -14,7 +14,7 @@ const Match = () => {
   const [cacheKey, setCacheKey] = useState(0); // forces new query
   const savedGame = savedGameJson ? JSON.parse(savedGameJson) : null;
 
-  const { data, error, isLoading } = useStartGameQuery(cacheKey, {
+  const { data, error, isLoading, isFetching } = useStartGameQuery(cacheKey, {
     skip: !!savedGame,
   });
 
@@ -26,7 +26,7 @@ const Match = () => {
     setCacheKey((k) => k + 1);
   };
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <div className={style.loading}>
         <Spinner size="lg" />
